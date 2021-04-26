@@ -254,7 +254,17 @@ export function createFunctionFromEventHandler<E, R>(
  * dependencies) into a form that can be used by AWS Lambda.  See
  * https://www.pulumi.com/docs/tutorials/aws/serializing-functions/ for additional
  * details on this process.
- * If no IAM Role is specified, CallbackFunction will automatically use the `AWSLambda_FullAccess` managed policy.
+ * If no IAM Role is specified, CallbackFunction will automatically use the following managed policies:
+ * `AWSLambda_FullAccess`
+ * `CloudWatchFullAccess`
+ * `CloudWatchEventsFullAccess`
+ * `AmazonS3FullAccess`
+ * `AmazonDynamoDBFullAccess`
+ * `AmazonSQSFullAccess`
+ * `AmazonKinesisFullAccess`
+ * `AWSCloudFormationReadOnlyAccess`
+ * `AmazonCognitoPowerUser`
+ * `AWSXrayWriteOnlyAccess`
  */
 export class CallbackFunction<E, R> extends LambdaFunction {
     public constructor(name: string, args: CallbackFunctionArgs<E, R>, opts: pulumi.CustomResourceOptions = {}) {
@@ -281,9 +291,54 @@ export class CallbackFunction<E, R> extends LambdaFunction {
             }, opts);
 
             if (!args.policies) {
-                const lambdaFullAccessCopyAttachment = new iam.RolePolicyAttachment(`${name}-lambdaFullAccessCopyAttachment`, {
+                const lambdaFullAccessAttachment = new iam.RolePolicyAttachment(`${name}-lambdaFullAccessAttachment`, {
                     role: role,
                     policyArn: iam.ManagedPolicy.LambdaFullAccess,
+                }, opts)
+
+                const cloudwatchFullAccessAttachment = new iam.RolePolicyAttachment(`${name}-cloudwatchFullAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.CloudWatchFullAccess,
+                }, opts)
+
+                const cloudwatchEventsFullAccessAttachment = new iam.RolePolicyAttachment(`${name}-cloudwatchEventsFullAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.CloudWatchEventsFullAccess,
+                }, opts)
+
+                const s3FullAccessAttachment = new iam.RolePolicyAttachment(`${name}-s3FullAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AmazonS3FullAccess,
+                }, opts)
+
+                const dynamoDbFullAccessAttachment = new iam.RolePolicyAttachment(`${name}-dynamoDbFullAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AmazonDynamoDBFullAccess,
+                }, opts)
+
+                const sqsFullAccessAttachment = new iam.RolePolicyAttachment(`${name}-sqsFullAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AmazonSQSFullAccess,
+                }, opts)
+
+                const kinesisFullAccessAttachment = new iam.RolePolicyAttachment(`${name}-kinesisFullAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AmazonKinesisFullAccess,
+                }, opts)
+
+                const cloudformationReadOnlyAccessAttachment = new iam.RolePolicyAttachment(`${name}-cloudformationReadOnlyAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AWSCloudFormationReadOnlyAccess,
+                }, opts)
+
+                const cognitoPowerUserAccessAttachment = new iam.RolePolicyAttachment(`${name}-cognitoPowerUserAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AmazonCognitoPowerUser,
+                }, opts)
+
+                const xwrayWriteOnlyAccessAttachment = new iam.RolePolicyAttachment(`${name}-xwrayWriteOnlyAccessAttachment`, {
+                    role: role,
+                    policyArn: iam.ManagedPolicy.AWSXrayWriteOnlyAccess,
                 }, opts)
             }
 
